@@ -64,6 +64,8 @@ function clippingPath(pathPoints,img,x,y){
     }
 
 
+
+
 var color = document.getElementById('color');
 function pick(event) {
   var x = event.layerX;
@@ -77,8 +79,7 @@ function pick(event) {
 }
 canvas2.addEventListener('mousemove', pick);
 
-var px=50;
-var py=0;
+
 
 canvas2.onmousedown = function(ev){
     ctx2.save();
@@ -87,9 +88,9 @@ canvas2.onmousedown = function(ev){
     ctx2.lineWidth = 1;
     mx = event.clientX - parseInt(canvas2.style.left) + window.pageXOffset;
     my = event.clientY - parseInt(canvas2.style.top) + window.pageYOffset;
-    ctx2.moveTo(mx-px, my-py);
+    ctx2.moveTo(mx, my);
     bx = mx;
-    by = my;
+    bx = my;
     drawMode = true;
 }
 
@@ -97,7 +98,7 @@ canvas2.onmousemove = function(ev){
     if(drawMode){
         mx = event.clientX - parseInt(canvas2.style.left) + window.pageXOffset;
         my = event.clientY - parseInt(canvas2.style.top) + window.pageYOffset;
-        ctx2.lineTo(mx-px, my-py);
+        ctx2.lineTo(mx, my);
         ctx2.stroke();
     }
 }
@@ -112,13 +113,13 @@ canvas2.onclick = function(){
 
 
   ctx2.clip();
-  ctx2.drawImage(img,-px,py);
+  ctx2.drawImage(img,141,63);
   ctx2.restore();
 
 }
 
 document.getElementById("save").onclick = function(){
-
+    ctx2.globalCompositeOperation="destination-in";
 
     window.open(ctx2.canvas.toDataURL('img/png'));
 }

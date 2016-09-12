@@ -14,11 +14,11 @@
 <script>
 
 var drawMode, mx, my;
-var bx,by;
+
 
 
 var img = new Image();
-img.src = "{% static 'img/heart.jpg' %}";  //load img
+img.src = "{% static 'img/test.jpg' %}";  //load img
 var canvas2 = document.getElementById("myCanvas2"); // 取得物件
 var ctx2 = canvas2.getContext("2d"); // 取得繪圖環境 圖片
 img.onload = function() {
@@ -29,39 +29,21 @@ img.onload = function() {
 
 
 //clip
+function clipImage(image,clipX,clipY,clipWidth,clipHeight){
 
-function clippingPath(pathPoints,img,x,y){
+    // draw the image to the canvas
+    // clip from the [clipX,clipY] position of the source image
+    // the clipped portion will be clipWidth x clipHeight
+    ctx2.drawImage(image,clipX,clipY,clipWidth,clipHeight,
+                    0,0,clipWidth,clipHeight);
 
-        // save the unclipped context
-        ctx2.save();
+    var clippedImg=document.getElementById("clipped");
+    clippedImg.src=canvas.toDataURL();
 
-        // define the path that will be clipped to
-        ctx2.beginPath();
-        ctx.moveTo(pathPoints[0],pathPoints[1]);
-        // this demo has a known number of polygon points
-        // but include a loop of "lineTo's" if you have a variable number of points
-        ctx.lineTo(pathPoints[2],pathPoints[3]);
-        ctx.lineTo(pathPoints[4],pathPoints[5]);
-        ctx2.closePath();
+}
 
-        // stroke the path
-        // half of the stroke is outside the path
-        // the outside part of the stroke will survive the clipping that follows
-        ctx2.lineWidth=2;
-        ctx2.stroke();
 
-        // make the current path a clipping path
-        ctx2.clip();
 
-        // draw the image which will be clipped except in the clipping path
-        ctx2.drawImage(img,x,y);
-
-        // restore the unclipped context (==undo the clipping path)
-        ctx2.restore();
-        var clippedImg=document.getElementById("clipped");
-        clippedImg.src=canvas.toDataURL();
-
-    }
 
 
 var color = document.getElementById('color');
@@ -77,19 +59,16 @@ function pick(event) {
 }
 canvas2.addEventListener('mousemove', pick);
 
-var px=50;
-var py=0;
+
 
 canvas2.onmousedown = function(ev){
-    ctx2.save();
     ctx2.beginPath();
     ctx2.strokeStyle = "#00f";
     ctx2.lineWidth = 1;
     mx = event.clientX - parseInt(canvas2.style.left) + window.pageXOffset;
     my = event.clientY - parseInt(canvas2.style.top) + window.pageYOffset;
-    ctx2.moveTo(mx-px, my-py);
-    bx = mx;
-    by = my;
+    ctx2.moveTo(mx, my);
+
     drawMode = true;
 }
 
@@ -97,32 +76,28 @@ canvas2.onmousemove = function(ev){
     if(drawMode){
         mx = event.clientX - parseInt(canvas2.style.left) + window.pageXOffset;
         my = event.clientY - parseInt(canvas2.style.top) + window.pageYOffset;
-        ctx2.lineTo(mx-px, my-py);
+        ctx2.lineTo(mx, my);
         ctx2.stroke();
     }
 }
 
 canvas2.onmouseup = function(){
-  ctx2.closePath();//結束時自動連回beginpath
-  ctx2.stroke();
+  //ctx2.closePath();//結束時自動連回beginpath
+  ctx2.fillStyle ="rgba(0,0,255,0.2)"
+  ctx2.fill();  //結束時自動填滿封閉路徑
+
 
     drawMode = false;
 }
-canvas2.onclick = function(){
-
-
-  ctx2.clip();
-  ctx2.drawImage(img,-px,py);
-  ctx2.restore();
-
-}
 
 document.getElementById("save").onclick = function(){
-
+    ctx2.globalCompositeOperation="destination-in";
+    clipImage(img,mx,my,500,700);
 
     window.open(ctx2.canvas.toDataURL('img/png'));
 }
 
+//???
 
 
 

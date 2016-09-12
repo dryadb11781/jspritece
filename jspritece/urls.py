@@ -25,4 +25,4 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^clk/$', clk),
     url(r'^test/$', test),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

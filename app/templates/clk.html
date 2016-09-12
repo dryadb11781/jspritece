@@ -1,6 +1,6 @@
 <html>
 <head>
-{% load static %}
+
 
     <title>Clock</title>
     <style>
@@ -34,9 +34,13 @@
     Canvas not supported
 
   </canvas>
-<img src="{% static 'img/test.jpg' %}"></img>
-<script src="{% static "js/clock.js" %}"></script>
+{% load staticfiles %}
 
+<!-- static image import
+<img src="{% static 'img/test.jpg' %}"></img>
+-->
+
+<script src="{% static 'js/clock.js' %}"></script>
 
   </body>
 
