@@ -15,7 +15,7 @@
 
 <script>
 
-var mx,my;
+var drawMode, mx, my;
 var bx,by;
 
 
@@ -55,7 +55,8 @@ canvas2.addEventListener('mousemove', pick);
 
 var px=800; // 生成圖片位置x位移
 var py=0;//生成圖片位置y位移
-
+var dx; //滑鼠實際位置
+var dy; // 滑鼠實際位置
 canvas2.onclick = function(ev){
   if(start_mark==1){
 
@@ -74,9 +75,40 @@ canvas2.onclick = function(ev){
     ctx2.closePath();//結束時自動連回beginpath
   }
 
-
+/*
+    bx = mx;
+    by = my;
+    drawMode = true;
+    */
 }
 
+/*canvas2.onmousemove = function(ev){
+    if(drawMode){
+        mx = event.clientX - parseInt(canvas2.style.left) + window.pageXOffset;
+        my = event.clientY - parseInt(canvas2.style.top) + window.pageYOffset;
+        ctx2.lineTo(mx, my);
+        //ctx2.arc(mx, my, 10, 0, 2*Math.PI);
+        ctx2.stroke();
+    }
+}
+*/
+/*
+canvas2.onmouseup = function(){
+  ctx2.closePath();//結束時自動連回beginpath
+  ctx2.stroke();
+
+    drawMode = false;
+}
+*/
+/*canvas2.onclick = function(){
+
+
+  ctx2.clip();
+  ctx2.drawImage(img,px,py);
+  ctx2.restore();
+
+}
+*/
 
 document.getElementById("markpoint").onclick = function(){
   start_mark = 1;
@@ -90,11 +122,11 @@ document.getElementById("creatpicture").onclick = function(){
   start_mark = 0;
   ctx2.save();
   ctx2.beginPath();
-  ctx2.moveTo(mark_matrix[0]+px, mark_matrix[1]+py);
+  ctx2.moveTo(mark_matrix[0], mark_matrix[1]);
   for (i = 0; i < mark_matrix.length; i+=2) {
 
 
-    ctx2.lineTo(mark_matrix[i]+px, mark_matrix[i+1]+py); //劃出全部點
+    ctx2.lineTo(mark_matrix[i], mark_matrix[i+1]); //劃出全部點
   }
   ctx2.closePath();//結束時自動連回beginpath
   ctx2.stroke();
