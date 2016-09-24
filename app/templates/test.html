@@ -6,11 +6,12 @@
 
 <input type="button" id="markpoint" value="ROI MARK">
 <input type="button" id="creatpicture" value="切割出圖片">
-<input type="button" id="revise" value="修改">
+<input type="button" id="scanpicture" value="讀取圖片座標">
 
 <div id="color" style="width:auto ;height:50px;float:left"></div>
 <div id="pointcounter" style="width:auto ;height:50px;float:left"></div>
-
+<p id="demo3"></p>
+<p id="demo"></p>
 {% load staticfiles %}
 
 <script>
@@ -21,7 +22,7 @@ var bx,by;
 
 // load picture
 var img = new Image();
-img.src = "{% static 'img/heart.jpg' %}";  //load img
+img.src = "{% static 'img/newheart.png' %}";  //load img
 var canvas2 = document.getElementById("myCanvas2"); // 取得物件
 var ctx2 = canvas2.getContext("2d"); // 取得繪圖環境 圖片
 img.onload = function() {
@@ -42,8 +43,8 @@ var mark_matrix = new Array();
 
 var color = document.getElementById('color');
 function pick(event) {
-  var x = event.layerX;
-  var y = event.layerY;
+  var x =  event.clientX - parseInt(canvas2.style.left) + window.pageXOffset;
+  var y = event.clientY - parseInt(canvas2.style.top) + window.pageYOffset;
   var pixel = ctx2.getImageData(x, y, 1, 1);
   var data = pixel.data;
   var rgba = 'rgba(' + data[0] + ',' + data[1] +
@@ -69,7 +70,7 @@ canvas2.onclick = function(ev){
     mark_matrix.push(my);
     mark_counter = mark_counter + 2;
     //pointcounter.textContent =mark_matrix[2];
-    ctx2.arc(mx, my, 10, 0, 2*Math.PI);
+    ctx2.arc(mx, my, 1, 0, 2*Math.PI);
     ctx2.stroke();
     ctx2.closePath();//結束時自動連回beginpath
   }
@@ -81,7 +82,7 @@ canvas2.onclick = function(ev){
 document.getElementById("markpoint").onclick = function(){
   start_mark = 1;
   mark_counter = 0;
-  mark_matrix= [];
+  mark_matrix= []; //存點
   ctx2.strokeStyle = "#00f";
   ctx2.lineWidth = 1;
 
@@ -103,6 +104,54 @@ document.getElementById("creatpicture").onclick = function(){
   ctx2.restore();
 
 }
+//讀取有顏色座標並標記位置
+var imageindex;
+var mask_x,maxk_y;//暫時存取mask位置
+var mask_coordinate_matrix = new Array();
+
+document.getElementById("scanpicture").onclick = function(){
+  var imgData = ctx2.getImageData(800, 0, canvas2.width-800, canvas2.height);
+  for (imageindex=0;imageindex<imgData.data.length;imageindex+=4)
+  {
+
+    if (imgData.data[imageindex]!==0||imgData.data[imageindex+1]!==0||imgData.data[imageindex+2]!==0)
+      {
+        mask_x = (imageindex/4)-(canvas2.width-800) * Math.floor(imageindex/4/(canvas2.width-800))+1;//martix 維度轉換處理需要再加強
+        mask_y = Math.floor(imageindex/4/700)+1;
+        mask_coordinate_matrix.push(mask_x);
+        mask_coordinate_matrix.push(mask_y);
+      }
+
+  }
+
+  //ctx2.putImageData(imgData,800,0);
+      mask_coordinate_matrix.toString();
+      document.getElementById("demo").innerHTML = mask_coordinate_matrix;
+      mark_matrix.toString();
+      document.getElementById("demo3").innerHTML = mark_matrix;
+
+
+
+
+
+
+      //繪出mask area
+      for (it = 0; it < mask_coordinate_matrix.length; it+=2) {
+
+        ctx2.save();
+        ctx2.beginPath();
+        ctx2.arc(mask_coordinate_matrix[it], mask_coordinate_matrix[it+1], 1, 0, 2*Math.PI);
+        ctx2.stroke();
+          ctx2.closePath();//結束時自動連回beginpath
+      }
+
+
+
+
+
+
+}
+
 
 
 
